@@ -2,23 +2,28 @@
   <div id="app">
    <!--  <img alt="Vue logo" src="./assets/logo.png" /> -->
    <!--  <HelloWorld msg="Welcome to Your Vue.js App" /> -->
-   <Title  msg="hello" />
-   <ul>
+    <Title  msg="hello" />
+   <!-- <ul>
      <li v-for=" (pokemon, index) in pokemons" :key="index">
-        {{pokemon.name}}
+        {{pokemon.name}} <br/>
+        {{pokemon.url}}
      </li>
-   </ul>
+   </ul> -->
+    <Cards :cards="pokemons" />
   </div>
 </template>
 
 <script>
 /* import HelloWorld from "./components/HelloWorld.vue"; */
 import Title from './components/Title';
+import Cards from './views/Cards';
+
 export default {
   name: "App",
   components: {
     /* HelloWorld */
-    Title
+    Title,
+    Cards
   },
 
   data(){
@@ -28,7 +33,7 @@ export default {
     }
   },
 
-  created(){
+  mounted(){
       this.axios
            .get(`${this.base_url}/pokemon`)
 
