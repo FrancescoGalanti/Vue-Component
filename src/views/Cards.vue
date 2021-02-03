@@ -1,8 +1,7 @@
 <template>
   <div class="cards">
      <Card v-for="(card, index) in cards" :key="index" :name="card.name" :url="card.url" />
-       {{card.name}}
-       {{card.url}}
+     
      
   </div>
 </template>

@@ -1,56 +1,108 @@
 <template>
   <div id="app">
-   <!--  <img alt="Vue logo" src="./assets/logo.png" /> -->
-   <!--  <HelloWorld msg="Welcome to Your Vue.js App" /> -->
-    <Title  msg="hello" />
-   <!-- <ul>
-     <li v-for=" (pokemon, index) in pokemons" :key="index">
-        {{pokemon.name}} <br/>
-        {{pokemon.url}}
-     </li>
-   </ul> -->
-    <Cards :cards="pokemons" />
+    <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
+    <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
+    <Title msg="Hello" />
+    <!-- <ul>
+      <li v-for="(pokemon, index) in pokemons" :key="index">
+        {{ pokemon.name }} 
+        {{ pokemon.url }}
+      </li>
+    </ul> -->
+    <FormCustom msg="Cerca un pokemon" @sendForm="searchPokemon" />
+    <FormCustom msg="Cerca un tipo di pokemon" @sendForm="searchType" />
+    <!-- <FormCustom @sendForm="searchPokemon" /> -->
+    <Cards :cards="pokemons" v-if="pokemons.length > 0" />
+    <h1 v-else>Non ci sono risultati</h1>
   </div>
 </template>
 
 <script>
-/* import HelloWorld from "./components/HelloWorld.vue"; */
-import Title from './components/Title';
-import Cards from './views/Cards';
+// import HelloWorld from "./components/HelloWorld.vue";
+import Title from "./components/Title";
+import Cards from "./views/Cards.vue";
+import FormCustom from "./components/Form";
 
 export default {
   name: "App",
   components: {
-    /* HelloWorld */
+    // HelloWorld
     Title,
-    Cards
+    Cards,
+    FormCustom
   },
-
-  data(){
+  data() {
     return {
       pokemons: [],
-      count: 0,
-    }
+      count: 0
+    };
   },
+  mounted() {
+    this.axios
+      .get(`${this.base_url}/pokemon`)
+      .then(result => {
+        //console.log(result);
 
-  mounted(){
+        // const {
+        //   data: { results }
+        // } = result;
+        // console.log(results);
+
+        this.pokemons = result.data.results;
+        this.count = result.data.count;
+        console.log(this.pokemons.length);
+      })
+      .catch(() => {
+        // console.error(err);
+        this.pokemons = [];
+      });
+  },
+  methods: {
+    searchPokemon(text) {
+      console.log(text);
       this.axios
-           .get(`${this.base_url}/pokemon`)
+        .get(`${this.base_url}/pokemon/${text}`)
+        .then(result => {
+          console.log(result);
+          this.pokemons = [{
+            name: result.data.name,
+            height: result.data.height,
+            weight: result.data.weight
+          }];
 
-           .then(response => {
-             /*  console.log(response);
-              const {data: {results}} = response;
-              console.log(results); */
-              this.pokemons = response.data.results;
-              this.count = response.data.count;
-              console.log(this.pokemons);
-               console.log(this.count);
-           })
-           .catch(error => {
-             console.log(error);
-           });
-  } 
-}
+          // const {
+          //   data: { results }
+          // } = result;
+          // console.log(results);
+
+          // this.pokemons = result.data.results;
+          // this.count = result.data.count;
+        })
+        .catch(() => {
+          // console.error(err);
+          this.pokemons = [];
+
+        });
+    },
+    searchType(text) {
+      console.log(text);
+      this.axios
+        .get(`${this.base_url}/type/${text}`)
+        .then(result => {
+          const results = result.data.pokemon;
+
+          const pokemons = results.map(element => {
+            return { name: element.pokemon.name, url: element.pokemon.url };
+          });
+
+          this.pokemons = pokemons;
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
+  }
+};
 </script>
 
 <style lang="scss">
