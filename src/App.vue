@@ -16,11 +16,20 @@ export default {
     Title
   },
 
-  mounted(){
+  data(){
+    return {
+      pokemons: [],
+    }
+  },
+
+  created(){
       this.axios
-           .get('${this.base_url}')
+           .get(`${this.base_url}/pokemon`)
+
            .then(response => {
               console.log(response);
+              this.pokemons = response.data.results;
+              console.log(this.pokemons);
            })
            .catch(error => {
              console.log(error);
