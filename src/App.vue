@@ -3,6 +3,11 @@
    <!--  <img alt="Vue logo" src="./assets/logo.png" /> -->
    <!--  <HelloWorld msg="Welcome to Your Vue.js App" /> -->
    <Title  msg="hello" />
+   <ul>
+     <li v-for=" (pokemon, index) in pokemons" :key="index">
+        {{pokemon.name}}
+     </li>
+   </ul>
   </div>
 </template>
 
@@ -19,6 +24,7 @@ export default {
   data(){
     return {
       pokemons: [],
+      count: 0,
     }
   },
 
@@ -27,9 +33,13 @@ export default {
            .get(`${this.base_url}/pokemon`)
 
            .then(response => {
-              console.log(response);
+             /*  console.log(response);
+              const {data: {results}} = response;
+              console.log(results); */
               this.pokemons = response.data.results;
+              this.count = response.data.count;
               console.log(this.pokemons);
+               console.log(this.count);
            })
            .catch(error => {
              console.log(error);
