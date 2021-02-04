@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <header>
+      <h1 class="header_title">Io sono l'header</h1>
+    </header>
     <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
     <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
     <Title msg="Hello" />
@@ -9,8 +12,16 @@
         {{ pokemon.url }}
       </li>
     </ul> -->
-    <FormCustom msg="Cerca un pokemon" @sendForm="searchPokemon" />
-    <FormCustom msg="Cerca un tipo di pokemon" @sendForm="searchType" />
+    <FormCustom
+      msg="Cerca un pokemon"
+      @sendForm="searchPokemon"
+      @sendTypeSelected="sendTypeSelected"
+    />
+    <FormCustom
+      msg="Cerca un tipo di pokemon"
+      @sendForm="searchType"
+      @sendTypeSelected="sendTypeSelected"
+    />
     <!-- <FormCustom @sendForm="searchPokemon" /> -->
     <Cards :cards="pokemons" v-if="pokemons.length > 0" />
     <h1 v-else>Non ci sono risultati</h1>
@@ -19,9 +30,9 @@
 
 <script>
 // import HelloWorld from "./components/HelloWorld.vue";
-import Title from "./components/Title";
+import Title from "./components/Title.vue";
 import Cards from "./views/Cards.vue";
-import FormCustom from "./components/Form";
+import FormCustom from "./components/Form.vue";
 
 export default {
   name: "App",
@@ -41,14 +52,28 @@ export default {
     this.axios
       .get(`${this.base_url}/pokemon`)
       .then(result => {
-        //console.log(result);
-
         // const {
         //   data: { results }
         // } = result;
         // console.log(results);
 
-        this.pokemons = result.data.results;
+        // this.pokemons = result.data.results;
+
+        result.data.results.forEach(element => {
+          const id = element.url.split("/");
+          console.log(id[id.length - 2]);
+
+          this.pokemons.push({
+            ...element,
+            img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
+              id[id.length - 2]
+            }.svg`
+          });
+        });
+
+        console.log(this.pokemons);
+        // https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/132.svg
+
         this.count = result.data.count;
         console.log(this.pokemons.length);
       })
@@ -64,11 +89,13 @@ export default {
         .get(`${this.base_url}/pokemon/${text}`)
         .then(result => {
           console.log(result);
-          this.pokemons = [{
-            name: result.data.name,
-            height: result.data.height,
-            weight: result.data.weight
-          }];
+          this.pokemons = [
+            {
+              name: result.data.name,
+              height: result.data.height,
+              weight: result.data.weight
+            }
+          ];
 
           // const {
           //   data: { results }
@@ -81,7 +108,6 @@ export default {
         .catch(() => {
           // console.error(err);
           this.pokemons = [];
-
         });
     },
     searchType(text) {
@@ -100,12 +126,16 @@ export default {
         .catch(err => {
           console.error(err);
         });
+    },
+    sendTypeSelected(text) {
+      console.log(text);
     }
   }
 };
 </script>
 
 <style lang="scss">
+@import "assets/scss/_common.scss";
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
